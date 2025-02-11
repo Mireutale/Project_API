@@ -7,7 +7,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
-from app.dependencies import get_db_session, create_db_and_tables
+from app.dependencies import get_db_session, create_db_and_tables, create_upload_dir, UPLOAD_DIR
 from app.models.models import User, Product, Category, ProductImage, Likes, Comment, Purchase  # 모델들을 불러옵니다.
 from pydantic import BaseModel
 from app.handlers import (auth_handler,
@@ -21,6 +21,7 @@ app = FastAPI()
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+    create_upload_dir()
 
 app.include_router(auth_handler.router)
 app.include_router(chat_handlers.router)
@@ -29,7 +30,7 @@ app.include_router(product_handler.router)
 
 # 정적 파일 (CSS, JS, 이미지 등) 제공
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # HTML 템플릿 설정
 templates = Jinja2Templates(directory="templates")
 

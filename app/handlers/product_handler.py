@@ -105,25 +105,8 @@ def update_product(product: ProductRequest = Body(...),
 def delete_product(product_id: int = Path(..., ge=0),
                    db: Session = Depends(get_db_session),
                    productService: ProductService = Depends()) -> None:
-    # !: Product 삭제 전에 Product와 연결되어 있는 테이블들에서도 삭제해줘야함..
-    # => sol 1. DELETE /products/{product_id}에서 각 테이블에 대한 DELETE API를 호출
-    # => sol 2. DB에서 CASCADE 설정 => 자동으로 연결된 테이블에서도 삭제
-    # 의논해봐야 할 듯.
-    productService.delete_all_product_images(db, product_id)
     productService.delete_product(db, product_id)
     return None
-
-# !: 업로드 된 image를 가져오기 위하여
-# GET /products/{product_id}/images{image_id} 이런 것도 필요할 듯
-# TODO: 
-@router.get("/{product_id}/image/{image_id}", status_code=200)
-def get_product_image(product_id: int = Path(..., ge=0),
-                      image_id: int = Path(..., ge=0),
-                      db: Session = Depends(get_db_session),
-                      productService: ProductService = Depends()
-) -> ProductImage:
-    # return productService.get_product_image(db, product_id, image_id)
-    raise NotImplementedError()
 
 @router.post("/{product_id}/image", status_code=200)
 async def upload_product_image(product_id: int = Path(..., ge=0),

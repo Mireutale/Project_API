@@ -98,7 +98,7 @@ class ProductService:
         product = db.get(Product, product_id)
         if not product:
             raise HTTPException(status_code=404, detail="Product not found.")
-        file_path = await save_UploadFile(image, f"{product.id}_{image.filename}")
+        file_path = await save_UploadFile(image)
         if not file_path:
             raise HTTPException(status_code=400, detail="File already exists.")
         productImage = ProductImage(product_id=product.id, image_URI=file_path)
@@ -119,16 +119,20 @@ class ProductService:
         if not productImage:
             raise HTTPException(status_code=404, detail="ProductImage not found.")
         db.delete(productImage)
-        delete_file(productImage.image_URI)
-        db.commit()
-        return True
+        if delete_file(productImage.image_URI):
+            db.commit()
+        else:
+            db.rollback()
+            raise HTTPException(status_code=500, detail="Failed to delete file.")
     
-    def delete_all_product_images(self, db: Session,
-                                  product_id: int) -> None:
-        product = db.get(Product, product_id)
-        if not product:
-            raise HTTPException(status_code=404, detail="Product not found.")
-        for productImage in self.get_product_images(db, product_id):
-            db.delete(productImage)
-        db.commit()
-        return None
+    ### Decaprecated
+    # def delete_all_product_images(self, db: Session,
+    #                               product_id: int) -> None:
+    #     product = db.get(Product, product_id)
+    #     if not product:
+    #         raise HTTPException(status_code=404, detail="Product not found.")
+    #     for productImage in self.get_product_images(db, product_id):
+    #         db.delete(productImage)
+    #         delete_file(productImage.image_URI)
+    #     db.commit()
+    #     return None
