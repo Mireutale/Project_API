@@ -22,6 +22,7 @@
 - v0.1.8 add front setup files
 - v0.1.9 add front my_page, sales, boughts, likes & img
 - v0.2 split module
+- v0.3 front-end connect
 ```
 ---
 ## 실행 테스트
