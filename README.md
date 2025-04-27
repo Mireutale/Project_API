@@ -47,9 +47,6 @@ pip install websockets
 fastapi dev main.py
 ```
 
-## carrot.db
-테스트용 db
-
 ## frontend - backend
 ```
 homepage
